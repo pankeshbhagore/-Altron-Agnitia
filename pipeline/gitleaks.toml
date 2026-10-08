@@ -1,0 +1,8 @@
+title = "twin gitleaks"
+[extend]
+useDefault = true
+[[rules]]
+id = "twin-demo-key"
+description = "Hardcoded demo API key in sample app"
+regex = '''sk_live_[A-Za-z0-9_]+'''
+tags = ["key","demo"]

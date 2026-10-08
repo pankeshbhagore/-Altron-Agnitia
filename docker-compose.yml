@@ -1,0 +1,62 @@
+# DevSecOps Digital Twin — full stack on an ISOLATED network.
+# target-app = vulnerable twin target | backend = posture API + attack stream
+# frontend = Twin Console | prometheus + grafana = monitoring
+services:
+  target-app:
+    build: ./target-app
+    container_name: twin-target
+    environment: [APP_DEBUG=true]          # W4 misconfiguration (set false to harden)
+    networks: [twin]
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: twin-backend
+    depends_on: [target-app]
+    environment:
+      - SCEN_DIR=/scenarios
+      - TWIN_TARGET=http://target-app:5000
+      - EVIDENCE_DIR=/evidence
+    volumes:
+      - ./scenarios:/scenarios:ro
+      - ./monitoring/evidence:/evidence:ro
+    networks: [twin]
+
+  frontend:
+    build: ./frontend
+    container_name: twin-frontend
+    depends_on: [backend]
+    ports: ["8080:80"]
+    networks: [twin]
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: twin-prometheus
+    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+    networks: [twin]
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: twin-grafana
+    environment: [GF_AUTH_ANONYMOUS_ENABLED=true]
+    volumes: ["./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/twin.json:ro"]
+    ports: ["3000:3000"]
+    networks: [twin]
+
+  # Runtime detection. Opt-in: `docker compose --profile full up` (needs privileges).
+  falco:
+    image: falcosecurity/falco:0.38.2
+    container_name: twin-falco
+    profiles: ["full"]
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ./monitoring/falco_rules.yaml:/etc/falco/rules.d/twin_rules.yaml:ro
+    networks: [twin]
+
+networks:
+  twin:
+    driver: bridge
+    internal: false      # set true for a full air-gap (blocks all container egress)

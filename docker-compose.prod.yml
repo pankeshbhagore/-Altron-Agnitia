@@ -1,0 +1,9 @@
+# Production override: hardened posture. Apply with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+# The CI config-policy gate asserts APP_DEBUG is NOT true here.
+services:
+  target-app:
+    environment:
+      - APP_DEBUG=false          # W4 fixed: debug off, /debug/config returns 404
+  frontend:
+    ports: ["80:80"]

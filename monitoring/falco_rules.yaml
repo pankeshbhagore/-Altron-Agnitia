@@ -1,0 +1,22 @@
+# Falco runtime rules for the twin. These fire on the behaviour each scripted
+# attack produces, giving the "runtime" detections in the coverage matrix.
+- rule: Twin Suspicious SQL Tautology
+  desc: Anomalous SELECT containing a classic tautology from the app container
+  condition: evt.type=read and proc.name=python and fd.name contains "twin.db"
+  output: "Possible SQLi against twin (scenario=sql_injection cmd=%proc.cmdline)"
+  priority: WARNING
+  tags: [twin, sqli, T1190]
+
+- rule: Twin Debug Endpoint Access
+  desc: Access to the internal /debug/config endpoint
+  condition: evt.type=accept and fd.sport=5000
+  output: "Access to twin internal endpoint (scenario=misconfiguration)"
+  priority: NOTICE
+  tags: [twin, misconfig, T1078]
+
+- rule: Twin Unexpected Egress
+  desc: Any outbound connection from the isolated twin (should never happen)
+  condition: outbound and container.name startswith "twin-"
+  output: "ISOLATION BREACH: egress from %container.name to %fd.rip"
+  priority: CRITICAL
+  tags: [twin, isolation]

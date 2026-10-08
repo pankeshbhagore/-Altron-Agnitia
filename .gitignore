@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+report.json
+/tmp/
+monitoring/evidence/*.json
+# frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/dist-single/
+backend/app/static/
+*.tsbuildinfo
+.pytest_cache/

@@ -1,0 +1,62 @@
+name: devsecops-pipeline
+# Shift-left security gates. In the twin, toggling these ON is what moves the
+# posture score from F to A. Each gate maps to a scenario.
+on: [push, pull_request]
+
+jobs:
+  secret-scan:          # -> scenario 02 (leaked credential)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: gitleaks (blocking)
+        uses: gitleaks/gitleaks-action@v2
+        env: { GITLEAKS_CONFIG: pipeline/gitleaks.toml }
+
+  dependency-scan:      # -> scenario 03 (vulnerable dependency)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy FS scan (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: app
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          format: json
+          output: trivy.json
+      - uses: actions/upload-artifact@v4
+        with: { name: trivy, path: trivy.json }
+
+  sast:                 # -> scenario 01 (SQL injection)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bandit SAST (flags string-built SQL)
+        run: pip install bandit && bandit -r app -f json -o bandit.json || true
+      - uses: actions/upload-artifact@v4
+        with: { name: bandit, path: bandit.json }
+
+  config-policy:        # -> scenario 04 (misconfiguration)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Config policy — no debug in prod (fails build if violated)
+        run: |
+          echo "policy: APP_DEBUG must not be true in the production override"
+          if grep -q "APP_DEBUG=true" docker-compose.prod.yml; then
+            echo "::error::APP_DEBUG=true found in docker-compose.prod.yml"; exit 1
+          fi
+          echo "ok: production config has debug disabled"
+
+  score-gate:           # computes posture; fail build below threshold
+    needs: [secret-scan, dependency-scan, sast, config-policy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyyaml
+      - name: Compute security score
+        run: |
+          cd engine && python orchestrator.py --out report.json
+          python -c "import json;s=json.load(open('report.json'))['score']['after'];print('score',s);exit(0 if s>=80 else 1)"

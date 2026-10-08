@@ -1,0 +1,15 @@
+id: misconfiguration
+name: Debug mode + exposed internal endpoint
+severity: MEDIUM
+mitre: T1078.001
+step: Misconfiguration
+probe: misconfiguration
+detects_at: missed           # nothing catches this today -> the detection GAP
+remediation:
+  fix: Set APP_DEBUG=false in prod, remove /debug/config, add a config-policy check (OPA/conftest) to CI.
+  after_stage: pipeline
+  effort: medium
+requires: []
+grants: [debug_access, env_disclosure]
+owasp: "A05:2021 Security Misconfiguration"
+cwe: CWE-489

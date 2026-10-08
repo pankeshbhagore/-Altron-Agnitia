@@ -1,0 +1,436 @@
+{
+  "generated_at": "2026-10-07T16:41:58.091390+00:00",
+  "twin": "devsecops-digital-twin",
+  "scenarios": [
+    {
+      "id": "sql_injection",
+      "name": "SQL Injection (auth bypass)",
+      "mitre": "T1190",
+      "step": "Initial Access",
+      "severity": "CRITICAL",
+      "success": true,
+      "stage": "runtime",
+      "natural_stage": "runtime",
+      "evidence": "simulated: auth bypass via tautology payload",
+      "requires": [],
+      "grants": [
+        "db_read",
+        "auth_bypass"
+      ],
+      "owasp": "A03:2021 Injection",
+      "cwe": "CWE-89",
+      "detections": [
+        {
+          "stage": "runtime",
+          "tool": "Falco",
+          "severity": "Warning",
+          "id": "Unexpected DB query shape",
+          "target": "sql_injection",
+          "detail": "anomalous SELECT with tautology from app container"
+        }
+      ]
+    },
+    {
+      "id": "leaked_credential",
+      "name": "Leaked credential in source",
+      "mitre": "T1552.001",
+      "step": "Credential Access",
+      "severity": "HIGH",
+      "success": true,
+      "stage": "missed",
+      "natural_stage": "pipeline",
+      "evidence": "simulated: hardcoded key readable via /debug/config",
+      "requires": [
+        "debug_access"
+      ],
+      "grants": [
+        "api_key",
+        "service_pivot"
+      ],
+      "owasp": "A07:2021 Identification & Authentication Failures",
+      "cwe": "CWE-798",
+      "detections": [
+        {
+          "stage": "pipeline",
+          "tool": "gitleaks",
+          "severity": "HIGH",
+          "id": "generic-api-key",
+          "target": "leaked_credential",
+          "detail": "app/main.py:INTERNAL_API_KEY"
+        }
+      ]
+    },
+    {
+      "id": "vulnerable_dependency",
+      "name": "Known-vulnerable dependency",
+      "mitre": "T1195.001",
+      "step": "Supply Chain",
+      "severity": "HIGH",
+      "success": true,
+      "stage": "missed",
+      "natural_stage": "pipeline",
+      "evidence": "CVE-2023-25577 / CVE-2022-29361 present in image",
+      "requires": [],
+      "grants": [
+        "rce_potential"
+      ],
+      "owasp": "A06:2021 Vulnerable & Outdated Components",
+      "cwe": "CWE-1104",
+      "detections": [
+        {
+          "stage": "pipeline",
+          "tool": "Trivy",
+          "severity": "HIGH",
+          "id": "CVE-2023-25577",
+          "target": "vulnerable_dependency",
+          "detail": "Werkzeug 2.0.1 multipart DoS"
+        }
+      ]
+    },
+    {
+      "id": "misconfiguration",
+      "name": "Debug mode + exposed internal endpoint",
+      "mitre": "T1078.001",
+      "step": "Misconfiguration",
+      "severity": "MEDIUM",
+      "success": true,
+      "stage": "missed",
+      "natural_stage": "missed",
+      "evidence": "simulated: APP_DEBUG=true, /debug/config exposed",
+      "requires": [],
+      "grants": [
+        "debug_access",
+        "env_disclosure"
+      ],
+      "owasp": "A05:2021 Security Misconfiguration",
+      "cwe": "CWE-489",
+      "detections": []
+    }
+  ],
+  "score": {
+    "before": 18,
+    "after": 100,
+    "improvement": 82,
+    "grade_before": "F",
+    "grade_after": "A"
+  },
+  "posture_before": {
+    "score": 18,
+    "grade": "F",
+    "rows": [
+      {
+        "name": "SQL Injection (auth bypass)",
+        "severity": "CRITICAL",
+        "stage": "runtime",
+        "weight": 10,
+        "credit_pct": 50,
+        "attack_success": true
+      },
+      {
+        "name": "Leaked credential in source",
+        "severity": "HIGH",
+        "stage": "missed",
+        "weight": 7,
+        "credit_pct": 0,
+        "attack_success": true
+      },
+      {
+        "name": "Known-vulnerable dependency",
+        "severity": "HIGH",
+        "stage": "missed",
+        "weight": 7,
+        "credit_pct": 0,
+        "attack_success": true
+      },
+      {
+        "name": "Debug mode + exposed internal endpoint",
+        "severity": "MEDIUM",
+        "stage": "missed",
+        "weight": 4,
+        "credit_pct": 0,
+        "attack_success": true
+      }
+    ],
+    "caught_pipeline": 0,
+    "caught_runtime": 1,
+    "missed": 3
+  },
+  "posture_after": {
+    "score": 100,
+    "grade": "A",
+    "rows": [
+      {
+        "name": "SQL Injection (auth bypass)",
+        "severity": "CRITICAL",
+        "stage": "pipeline",
+        "weight": 10,
+        "credit_pct": 100,
+        "attack_success": false
+      },
+      {
+        "name": "Leaked credential in source",
+        "severity": "HIGH",
+        "stage": "remediated",
+        "weight": 7,
+        "credit_pct": 100,
+        "attack_success": false
+      },
+      {
+        "name": "Known-vulnerable dependency",
+        "severity": "HIGH",
+        "stage": "remediated",
+        "weight": 7,
+        "credit_pct": 100,
+        "attack_success": false
+      },
+      {
+        "name": "Debug mode + exposed internal endpoint",
+        "severity": "MEDIUM",
+        "stage": "pipeline",
+        "weight": 4,
+        "credit_pct": 100,
+        "attack_success": false
+      }
+    ],
+    "caught_pipeline": 2,
+    "caught_runtime": 0,
+    "missed": 0
+  },
+  "attack_path": {
+    "nodes": [
+      {
+        "id": "entry",
+        "label": "Attacker",
+        "lane": "Supply Chain",
+        "mitre": "-",
+        "stage": "n/a",
+        "severity": "LOW",
+        "active": true
+      },
+      {
+        "id": "sql_injection",
+        "label": "SQL Injection (auth bypass)",
+        "lane": "Initial Access",
+        "mitre": "T1190",
+        "stage": "runtime",
+        "severity": "CRITICAL",
+        "active": true
+      },
+      {
+        "id": "leaked_credential",
+        "label": "Leaked credential in source",
+        "lane": "Credential Access",
+        "mitre": "T1552.001",
+        "stage": "missed",
+        "severity": "HIGH",
+        "active": true
+      },
+      {
+        "id": "vulnerable_dependency",
+        "label": "Known-vulnerable dependency",
+        "lane": "Supply Chain",
+        "mitre": "T1195.001",
+        "stage": "missed",
+        "severity": "HIGH",
+        "active": true
+      },
+      {
+        "id": "misconfiguration",
+        "label": "Debug mode + exposed internal endpoint",
+        "lane": "Misconfiguration",
+        "mitre": "T1078.001",
+        "stage": "missed",
+        "severity": "MEDIUM",
+        "active": true
+      },
+      {
+        "id": "impact",
+        "label": "Data / Admin compromise",
+        "lane": "Impact",
+        "mitre": "T1486",
+        "stage": "missed",
+        "severity": "CRITICAL",
+        "active": true
+      }
+    ],
+    "edges": [
+      {
+        "from": "entry",
+        "to": "sql_injection",
+        "active": true,
+        "stage": "runtime"
+      },
+      {
+        "from": "entry",
+        "to": "leaked_credential",
+        "active": true,
+        "stage": "missed"
+      },
+      {
+        "from": "entry",
+        "to": "vulnerable_dependency",
+        "active": true,
+        "stage": "missed"
+      },
+      {
+        "from": "entry",
+        "to": "misconfiguration",
+        "active": true,
+        "stage": "missed"
+      },
+      {
+        "from": "sql_injection",
+        "to": "impact",
+        "active": true,
+        "stage": "runtime"
+      },
+      {
+        "from": "leaked_credential",
+        "to": "impact",
+        "active": true,
+        "stage": "missed"
+      },
+      {
+        "from": "vulnerable_dependency",
+        "to": "impact",
+        "active": true,
+        "stage": "missed"
+      },
+      {
+        "from": "misconfiguration",
+        "to": "impact",
+        "active": true,
+        "stage": "missed"
+      }
+    ],
+    "lanes": [
+      "Supply Chain",
+      "Misconfiguration",
+      "Initial Access",
+      "Credential Access",
+      "Lateral Movement",
+      "Impact"
+    ]
+  },
+  "chain": {
+    "order": [
+      "sql_injection",
+      "vulnerable_dependency",
+      "misconfiguration",
+      "leaked_credential"
+    ],
+    "edges": [
+      {
+        "from": "entry",
+        "to": "sql_injection",
+        "unlocks": [
+          "db_read",
+          "auth_bypass"
+        ]
+      },
+      {
+        "from": "entry",
+        "to": "vulnerable_dependency",
+        "unlocks": [
+          "rce_potential"
+        ]
+      },
+      {
+        "from": "entry",
+        "to": "misconfiguration",
+        "unlocks": [
+          "debug_access",
+          "env_disclosure"
+        ]
+      },
+      {
+        "from": "misconfiguration",
+        "to": "leaked_credential",
+        "unlocks": [
+          "debug_access"
+        ]
+      },
+      {
+        "from": "leaked_credential",
+        "to": "impact",
+        "unlocks": [
+          "compromise"
+        ]
+      }
+    ],
+    "blast_radius": [
+      {
+        "capability": "api_key",
+        "asset": "Service API key"
+      },
+      {
+        "capability": "auth_bypass",
+        "asset": "Admin account"
+      },
+      {
+        "capability": "db_read",
+        "asset": "User database"
+      },
+      {
+        "capability": "debug_access",
+        "asset": "Internal /debug surface"
+      },
+      {
+        "capability": "env_disclosure",
+        "asset": "Environment + config"
+      },
+      {
+        "capability": "rce_potential",
+        "asset": "Code execution on host"
+      },
+      {
+        "capability": "service_pivot",
+        "asset": "Downstream services"
+      }
+    ],
+    "reachable_count": 4,
+    "gated": [],
+    "depth": 4,
+    "summary": "4-step chain reaching 7 assets"
+  },
+  "remediation": [
+    {
+      "id": "sql_injection",
+      "name": "SQL Injection (auth bypass)",
+      "severity": "CRITICAL",
+      "fix": "Use parameterised queries (sqlite3 '?' placeholders); add a SAST gate (bandit/semgrep) to CI.",
+      "effort": "low",
+      "after_stage": "pipeline"
+    },
+    {
+      "id": "leaked_credential",
+      "name": "Leaked credential in source",
+      "severity": "HIGH",
+      "fix": "Remove the hardcoded key, load from a secret manager, rotate the key, add gitleaks as a blocking CI gate.",
+      "effort": "low",
+      "after_stage": "remediated"
+    },
+    {
+      "id": "vulnerable_dependency",
+      "name": "Known-vulnerable dependency",
+      "severity": "HIGH",
+      "fix": "Upgrade Werkzeug/Flask to patched versions; fail the build on HIGH/CRITICAL CVEs with Trivy.",
+      "effort": "low",
+      "after_stage": "remediated"
+    },
+    {
+      "id": "misconfiguration",
+      "name": "Debug mode + exposed internal endpoint",
+      "severity": "MEDIUM",
+      "fix": "Set APP_DEBUG=false in prod, remove /debug/config, add a config-policy check (OPA/conftest) to CI.",
+      "effort": "medium",
+      "after_stage": "pipeline"
+    }
+  ],
+  "coverage": {
+    "pipeline": 0,
+    "runtime": 1,
+    "missed": 3,
+    "total": 4
+  }
+}

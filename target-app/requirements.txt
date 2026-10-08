@@ -1,0 +1,4 @@
+# W3: Flask 2.0.1 pulls Werkzeug 2.0.1, which has known CVEs (e.g. CVE-2022-29361,
+# CVE-2023-25577). Trivy flags these at build time so we can show the pipeline gate.
+Flask==2.0.1
+Werkzeug==2.0.1

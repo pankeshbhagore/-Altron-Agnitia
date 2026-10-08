@@ -1,0 +1,15 @@
+id: vulnerable_dependency
+name: Known-vulnerable dependency
+severity: HIGH
+mitre: T1195.001
+step: Supply Chain
+probe: vulnerable_dependency
+detects_at: pipeline         # Trivy flags Werkzeug 2.0.1 CVEs at build time
+remediation:
+  fix: Upgrade Werkzeug/Flask to patched versions; fail the build on HIGH/CRITICAL CVEs with Trivy.
+  after_stage: remediated
+  effort: low
+requires: []
+grants: [rce_potential]
+owasp: "A06:2021 Vulnerable & Outdated Components"
+cwe: CWE-1104

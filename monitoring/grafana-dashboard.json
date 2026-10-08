@@ -1,0 +1,13 @@
+{
+  "title": "Twin — Security Posture",
+  "uid": "twin-posture",
+  "schemaVersion": 39,
+  "panels": [
+    {"type":"stat","title":"Security Score","gridPos":{"h":6,"w":6,"x":0,"y":0},
+     "targets":[{"expr":"twin_security_score"}]},
+    {"type":"timeseries","title":"Attack events by stage","gridPos":{"h":6,"w":18,"x":6,"y":0},
+     "targets":[{"expr":"twin_detections_total"}]},
+    {"type":"table","title":"Detection coverage","gridPos":{"h":8,"w":24,"x":0,"y":6},
+     "targets":[{"expr":"twin_coverage"}]}
+  ]
+}

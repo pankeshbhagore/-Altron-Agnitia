@@ -1,0 +1,15 @@
+id: sql_injection
+name: SQL Injection (auth bypass)
+severity: CRITICAL
+mitre: T1190
+step: Initial Access
+probe: sql_injection
+detects_at: runtime          # Falco sees the anomalous query; pipeline SAST missed it
+remediation:
+  fix: Use parameterised queries (sqlite3 '?' placeholders); add a SAST gate (bandit/semgrep) to CI.
+  after_stage: pipeline
+  effort: low
+requires: []
+grants: [db_read, auth_bypass]
+owasp: "A03:2021 Injection"
+cwe: CWE-89
