@@ -40,9 +40,9 @@ export default function ScoreGauge({ posture, delta, mode }:
             style={{ transition: "stroke .3s" }} />
         </svg>
         <div style={{ position: "absolute", inset: 0, display: "grid", placeContent: "center", textAlign: "center" }}>
-          <div className="mono" style={{ fontSize: 60, fontWeight: 700, lineHeight: 1, letterSpacing: "-.03em" }}>{shown}</div>
-          <div className="mono" style={{ fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
-            GRADE <b style={{ color }}>{posture.grade}</b>
+          <div className="mono" style={{ fontSize: 72, fontWeight: 700, lineHeight: 1, letterSpacing: "-.04em", color: "#FFF" }}>{shown}</div>
+          <div className="mono" style={{ fontSize: 13, color: "var(--muted)", marginTop: 8, letterSpacing: 1 }}>
+            GRADE <b style={{ color, fontSize: 14 }}>{posture.grade}</b>
           </div>
         </div>
       </div>
