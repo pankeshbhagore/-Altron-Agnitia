@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import type { Report } from "../types";
 import { simulate } from "../harden";
+import { playPing, playBlock, playAlarm } from "../sfx";
 
 type Mode = "baseline" | "hardened";
 const ALL_CONTROLS = { sast_gate: true, patch_sqli: true, gitleaks_gate: true, trivy_gate: true, opa_policy: true };
@@ -240,6 +241,7 @@ export default function Simulation3D({ report }: { report: Report }) {
           packet.position.copy(p);
           if (segT >= 0.62) {
             // blocked at the first shift-left gate (runs once — phase flips to done)
+            playBlock();
             pushLog.current(`✓ ${nameById[path[1]]} — blocked at pipeline gate (shield held)`, "ok");
             pushLog.current("Attack contained · chain never reaches production", "ok");
             setHud((h) => ({ ...h, step: "contained ✓", blast: 0 }));
@@ -262,11 +264,13 @@ export default function Simulation3D({ report }: { report: Report }) {
             const tgt = path[seg + 1];
             compromised.add(tgt);
             if (tgt === "impact") {
+              playAlarm();
               setNodeStage("impact", COL.crit, 1.1);
               pushLog.current("⚠ Data / Admin compromise — full breach", "breach");
               setHud((h) => ({ ...h, step: "breached ⚠", blast: baseSim.chain.blast_radius.length }));
               phase = "done"; packet.visible = false;
             } else {
+              playPing();
               const sc = report.scenarios.find((s) => s.id === tgt);
               const stageHex = STAGE_HEX[sc?.stage ?? "missed"] ?? COL.red;
               setNodeStage(tgt, stageHex);
@@ -289,7 +293,7 @@ export default function Simulation3D({ report }: { report: Report }) {
     raf = requestAnimationFrame(loop);
 
     // expose a "begin" that flips phase to run on first play
-    const beginIfNeeded = () => { if (phase === "idle") { phase = "run"; } };
+    const beginIfNeeded = () => { if (phase === "idle") { phase = "run"; playPing(); } };
     const playWatch = setInterval(() => { if (ctrl.current.playing) beginIfNeeded(); }, 100);
 
     const onResize = () => {
