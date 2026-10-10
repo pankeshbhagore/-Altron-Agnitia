@@ -11,8 +11,9 @@ import RemediationPanel from "./components/RemediationPanel";
 import HardenView from "./components/HardenView";
 import ExportsView from "./components/ExportsView";
 import Simulation3D from "./components/Simulation3D";
+import AIChatView from "./components/AIChatView";
 
-type View = "overview" | "lab" | "sim3d" | "harden" | "remediation" | "exports";
+type View = "overview" | "lab" | "sim3d" | "harden" | "remediation" | "exports" | "ai";
 
 function PostureToggle({ mode, set }: { mode: PostureMode; set: (m: PostureMode) => void }) {
   return (
@@ -38,7 +39,7 @@ export default function App() {
   if (!report) return <div style={{ padding: 40, fontFamily: "var(--mono)", color: "var(--muted)" }}>Loading twin console…</div>;
 
   const posture = mode === "before" ? report.posture_before : report.posture_after;
-  const nav: [View, string][] = [["overview", "Overview"], ["lab", "Attack Lab"], ["sim3d", "3D Simulation"], ["harden", "Harden"], ["remediation", "Remediation"], ["exports", "Exports"]];
+  const nav: [View, string][] = [["overview", "Overview"], ["lab", "Attack Lab"], ["sim3d", "3D Simulation"], ["harden", "Harden"], ["remediation", "Remediation"], ["exports", "Exports"], ["ai", "AI Advisor"]];
 
   return (
     <div className="shell">
@@ -145,12 +146,24 @@ export default function App() {
             <ExportsView />
           </>
         )}
+
+        {view === "ai" && (
+          <>
+            <div className="pagehead">
+              <div>
+                <h2>AI Security Advisor</h2>
+                <p>Chat interactively with the GPT-4o powered Digital Twin. Ask it to summarize the report or analyze specific findings.</p>
+              </div>
+            </div>
+            <AIChatView />
+          </>
+        )}
       </main>
     </div>
   );
 }
 
 function Dot({ v }: { v: View }) {
-  const color = v === "overview" ? "var(--steel)" : v === "lab" ? "var(--red)" : v === "sim3d" ? "#7C3AED" : v === "harden" ? "var(--amber)" : v === "exports" ? "#7C3AED" : "var(--green)";
+  const color = v === "overview" ? "var(--steel)" : v === "lab" ? "var(--red)" : v === "sim3d" ? "#7C3AED" : v === "harden" ? "var(--amber)" : v === "exports" ? "#7C3AED" : v === "ai" ? "#10B981" : "var(--green)";
   return <i className="ic" style={{ background: color, borderRadius: 3, display: "inline-block" }} />;
 }
