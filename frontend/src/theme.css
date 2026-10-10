@@ -1,22 +1,42 @@
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  --bg:#F4F7FB; --panel:#FFFFFF; --panel2:#F3F6FB; --rail:#FFFFFF;
-  --line:#E6EBF2; --line2:#D4DCE8;
-  --ink:#101828; --muted:#667085; --dim:#98A2B3;
-  --steel:#2563EB; --green:#16A34A; --amber:#D97706; --red:#DC2626; --crit:#DC2626;
-  --on-accent:#FFFFFF;
-  --tint-steel:#EEF4FF; --tint-steel-bd:#C7DBFF;
-  --tint-green:#ECFDF3; --tint-green-bd:#A6F0C6;
-  --tint-amber:#FFF7E6; --tint-amber-bd:#FBDFA3;
-  --tint-red:#FEECEC;  --tint-red-bd:#F8C9C9;
-  --chip:#EEF2F8;
-  --code-bg:#0F1729; --code-bg2:#0B1220; --code-text:#E5EAF3; --code-dim:#8CA0BF;
-  --shadow:0 1px 2px rgba(16,24,40,.05), 0 6px 18px rgba(16,24,40,.06);
-  --shadow-sm:0 1px 2px rgba(16,24,40,.06);
-  --sans:'IBM Plex Sans',system-ui,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,monospace;
-  color-scheme: light;
+  /* Dark Cyberpunk / Neon Theme */
+  --bg: #0B0514; 
+  --panel: rgba(255, 255, 255, 0.03); 
+  --panel2: rgba(255, 255, 255, 0.05); 
+  --rail: #07030C;
+  --line: rgba(255, 255, 255, 0.08); 
+  --line2: rgba(255, 255, 255, 0.12);
+  
+  --ink: #FFFFFF; 
+  --muted: #A393BD; 
+  --dim: #675685;
+  
+  /* Neon Accents */
+  --steel: #A960FF; /* Neon Violet */
+  --green: #00F5D4; /* Cyan/Mint */
+  --amber: #FEE440; /* Yellow */
+  --red: #FF006E;   /* Neon Pink/Red */
+  --crit: #FF006E;
+  
+  --on-accent: #FFFFFF;
+  
+  /* Glow Tints */
+  --tint-steel: rgba(169, 96, 255, 0.15); --tint-steel-bd: rgba(169, 96, 255, 0.3);
+  --tint-green: rgba(0, 245, 212, 0.15);  --tint-green-bd: rgba(0, 245, 212, 0.3);
+  --tint-amber: rgba(254, 228, 64, 0.15); --tint-amber-bd: rgba(254, 228, 64, 0.3);
+  --tint-red: rgba(255, 0, 110, 0.15);    --tint-red-bd: rgba(255, 0, 110, 0.3);
+  
+  --chip: rgba(255, 255, 255, 0.05);
+  --code-bg: #07030C; --code-bg2: #050208; --code-text: #E5EAF3; --code-dim: #8CA0BF;
+  
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(169, 96, 255, 0.05);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.5);
+  
+  --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
@@ -24,10 +44,11 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font-family: var(--sans); font-size: 15px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  background-image: radial-gradient(1100px 500px at 90% -10%, #EAF1FF 0%, transparent 60%);
+  background-image: radial-gradient(circle at 80% -20%, rgba(169, 96, 255, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 10% 110%, rgba(0, 245, 212, 0.08) 0%, transparent 40%);
 }
 a { color: var(--steel); text-decoration: none; }
-button { font-family: inherit; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+button { font-family: inherit; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; color: var(--ink); }
 button:active { transform: scale(0.97); }
 .mono { font-family: var(--mono); }
 

@@ -11,9 +11,9 @@ const ALL_CONTROLS = { sast_gate: true, patch_sqli: true, gitleaks_gate: true, t
 
 // theme colors (hex ints for three)
 const COL = {
-  bg: 0xf4f7fb, ground: 0xe9eef6, line: 0xcdd6e4,
-  steel: 0x2563eb, green: 0x16a34a, amber: 0xd97706, red: 0xdc2626, crit: 0x991b1b,
-  ink: 0x101828,
+  bg: 0x0B0514, ground: 0x07030C, line: 0x332244,
+  steel: 0xA960FF, green: 0x00F5D4, amber: 0xFEE440, red: 0xFF006E, crit: 0xFF006E,
+  ink: 0xFFFFFF,
 };
 const STAGE_HEX: Record<string, number> = {
   pipeline: COL.green, runtime: COL.amber, missed: COL.red, remediated: COL.steel, "n/a": 0x94a3b8,
@@ -117,9 +117,9 @@ export default function Simulation3D({ report }: { report: Report }) {
     const mkLabel = (id: string, yOff: number) => {
       const div = document.createElement("div");
       div.style.cssText =
-        "font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;font-weight:600;color:#101828;max-width:200px;" +
-        "background:rgba(255,255,255,.92);border:1px solid #e6ebf2;border-radius:7px;padding:3px 8px;" +
-        "box-shadow:0 2px 8px rgba(16,24,40,.08);white-space:nowrap;transform:translateY(-6px)";
+        "font-family:'IBM Plex Sans',sans-serif;font-size:10.5px;font-weight:600;color:#FFFFFF;max-width:200px;" +
+        "background:rgba(11, 5, 20, 0.85);border:1px solid rgba(169, 96, 255, 0.3);border-radius:7px;padding:3px 8px;" +
+        "box-shadow:0 0 12px rgba(169, 96, 255, 0.15);white-space:nowrap;transform:translateY(-6px)";
       const nm = nameById[id] || id;
       const mit = mitreById[id] ? `<span style="font-family:'IBM Plex Mono';color:#667085;font-weight:500"> · ${mitreById[id]}</span>` : "";
       div.innerHTML = `${nm.length > 22 ? nm.slice(0, 21) + "…" : nm}${mit}`;
@@ -365,8 +365,8 @@ function btn(color: string): React.CSSProperties {
 }
 function Hud({ label, value, sub, color }: { label: string; value: string; sub: string; color: string }) {
   return (
-    <div style={{ background: "rgba(255,255,255,.92)", border: "1px solid var(--line)", borderRadius: 10,
-      padding: "8px 12px", textAlign: "center", boxShadow: "0 2px 8px rgba(16,24,40,.08)", minWidth: 62 }}>
+    <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: 10,
+      padding: "8px 12px", textAlign: "center", boxShadow: "var(--shadow-sm)", minWidth: 62, backdropFilter: "blur(8px)" }}>
       <div style={{ fontFamily: "var(--mono)", fontSize: 9, color: "var(--muted)", letterSpacing: 1 }}>{label}</div>
       <div style={{ fontFamily: "var(--mono)", fontSize: 24, fontWeight: 700, color, lineHeight: 1.1 }}>{value}</div>
       <div style={{ fontFamily: "var(--mono)", fontSize: 9, color: "var(--muted)" }}>{sub}</div>
