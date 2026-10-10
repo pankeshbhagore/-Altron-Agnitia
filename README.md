@@ -31,6 +31,16 @@ monitoring — all on an isolated, egress-blocked network.
 7. **Standards exports** — a MITRE ATT&CK **Navigator layer**, **Sigma** detection
    rules, and an **OPA/Rego** policy, plus **OWASP Top 10 / CWE** compliance mapping.
 
+## AI Capabilities (GPT-4o Integration)
+
+The twin is fully powered by an **OpenAI GPT-4o** engine (`backend/app/core/llm_engine.py`) offering elite AI assistance across the entire DevSecOps lifecycle:
+- **Offensive AI (Attack Analysis):** Evaluates risk, real-world impact, and suggests **novel, obfuscated zero-day payload vectors** to bypass common WAFs.
+- **Defensive AI (Detection Triage):** Acts as a Tier-2 SOC Analyst. It ingests runtime alerts (e.g. Falco system calls), classifies them as True/False Positives, and prescribes incident response actions.
+- **Solution AI (Remediation Enrichment):** Generates contextual "Principal AppSec Engineer Notes" detailing *why* a fix works, common developer mistakes, and long-term architectural improvements (e.g., ORM adoption).
+- **Interactive Security Chat:** An `/api/ai/chat` endpoint allowing you to query the Digital Twin directly (e.g., *"What is the most critical vulnerability in the twin?"*).
+
+*(Note: AI integrations fall back gracefully to deterministic local rules if network access is lost, ensuring the demo never breaks).*
+
 Plus: real-time **SSE attack streaming**, one-command **reset & replay**,
 deterministic scenario-as-code, and *monitored* isolation (a Falco rule alerts on
 any egress from the twin).

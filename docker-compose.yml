@@ -18,6 +18,9 @@ services:
       - SCEN_DIR=/scenarios
       - TWIN_TARGET=http://target-app:5000
       - EVIDENCE_DIR=/evidence
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_ORG_ID=${OPENAI_ORG_ID:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
     volumes:
       - ./scenarios:/scenarios:ro
       - ./monitoring/evidence:/evidence:ro

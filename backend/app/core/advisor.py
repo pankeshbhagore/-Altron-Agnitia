@@ -85,33 +85,16 @@ def advise(scenario_id: str) -> dict | None:
     if not kb:
         return None
     out = dict(scenario=scenario_id, **kb)
-    if os.getenv("ANTHROPIC_API_KEY"):
-        out["enriched"] = _llm_enrich(scenario_id, kb)  # optional, non-blocking
+    # Use centralized OpenAI GPT-4o engine for enrichment
+    try:
+        from . import llm_engine
+        if llm_engine.is_available():
+            out["enriched"] = llm_engine.enrich_remediation(scenario_id, kb)
+    except Exception:
+        pass  # graceful fallback — demo never breaks
     return out
 
 
 def advise_all(scenario_ids: list[str]) -> list[dict]:
     return [a for a in (advise(sid) for sid in scenario_ids) if a is not None]
 
-
-def _llm_enrich(scenario_id: str, kb: dict) -> str:
-    """Optional: expand the fix into richer guidance via the Anthropic API.
-    Deliberately best-effort — any failure returns a safe fallback string."""
-    try:
-        import urllib.request, json
-        body = json.dumps({
-            "model": "claude-sonnet-4-6", "max_tokens": 400,
-            "messages": [{"role": "user", "content":
-                f"In 3 sentences, give a senior AppSec engineer's note on fixing "
-                f"'{scenario_id}'. Risk: {kb['why']} Fix gate: {kb['gate']}"}]
-        }).encode()
-        req = urllib.request.Request(
-            "https://api.anthropic.com/v1/messages", data=body,
-            headers={"content-type": "application/json",
-                     "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-                     "anthropic-version": "2023-06-01"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            data = json.load(r)
-        return "".join(b.get("text", "") for b in data.get("content", []))
-    except Exception:
-        return "LLM enrichment unavailable; rules-based recipe above is authoritative."

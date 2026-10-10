@@ -12,10 +12,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import settings
-from .routers import report, attack, metrics, advanced
+from .routers import report, attack, metrics, advanced, ai
 
 app = FastAPI(title="Twin Console API", version="1.0.0",
-              description="DevSecOps Digital Twin — posture, attack stream, remediation")
+              description="DevSecOps Digital Twin — posture, attack stream, remediation, AI advisor")
 
 app.add_middleware(CORSMiddleware,
                    allow_origins=[o.strip() for o in settings.CORS.split(",")],
@@ -25,6 +25,7 @@ app.include_router(report.router)
 app.include_router(attack.router)
 app.include_router(metrics.router)
 app.include_router(advanced.router)
+app.include_router(ai.router)
 
 
 @app.get("/api/health")
