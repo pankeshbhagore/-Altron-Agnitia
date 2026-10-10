@@ -1,8 +1,8 @@
 import type { AttackPath, PostureMode, Stage } from "../types";
 
 const LANE_X: Record<string, number> = {
-  "Supply Chain": 70, "Misconfiguration": 180, "Initial Access": 290,
-  "Credential Access": 400, "Lateral Movement": 510, "Impact": 600,
+  "Supply Chain": 80, "Misconfiguration": 210, "Initial Access": 340,
+  "Credential Access": 470, "Lateral Movement": 600, "Impact": 720,
 };
 const C: Record<Stage, string> = {
   pipeline: "var(--green)", runtime: "var(--amber)", missed: "var(--red)",
@@ -13,7 +13,6 @@ const CT: Record<Stage, string> = {
   pipeline: "var(--tint-green)", runtime: "var(--tint-amber)", missed: "var(--tint-red)",
   remediated: "var(--tint-steel)", "n/a": "var(--panel2)",
 };
-const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 
 export default function AttackGraph({ path, mode }: { path: AttackPath; mode: PostureMode }) {
   const hardened = mode === "after";
@@ -29,7 +28,7 @@ export default function AttackGraph({ path, mode }: { path: AttackPath; mode: Po
   return (
     <div className="panel" style={{ minWidth: 0 }}>
       <p className="cap">ATTACK PATH · MITRE ATT&CK <span className="mono">{hardened ? "contained" : "live breach"}</span></p>
-      <svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", display: "block" }}>
+      <svg viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet" style={{ width: "100%", height: "auto", display: "block" }}>
         {path.lanes.map((l) => (
           <text key={l} x={LANE_X[l] ?? 300} y={22} textAnchor="middle"
             style={{ fill: "var(--dim)", fontFamily: "var(--mono)", fontSize: 10 }}>
@@ -43,7 +42,7 @@ export default function AttackGraph({ path, mode }: { path: AttackPath; mode: Po
           const col = hardened ? "var(--steel)" : C[e.stage] ?? "var(--dim)";
           const mx = (a.x + b.x) / 2;
           return (
-            <path key={i} d={`M${a.x + 46},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.x - 46},${b.y}`}
+            <path key={i} d={`M${a.x + 55},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.x - 55},${b.y}`}
               fill="none" stroke={col} strokeWidth={2} opacity={active ? 0.9 : 0.3}
               strokeDasharray={active ? "6 6" : undefined}
               style={active ? { animation: "dash 1.1s linear infinite" } : undefined} />
@@ -56,10 +55,14 @@ export default function AttackGraph({ path, mode }: { path: AttackPath; mode: Po
             : breached ? (CT[n.stage] ?? "var(--panel2)") : "var(--panel)";
           return (
             <g key={n.id}>
-              <rect x={x - 46} y={y - 20} width={92} height={40} rx={8}
+              <rect x={x - 55} y={y - 22} width={110} height={46} rx={8}
                 fill={fill} stroke={hardened ? "var(--steel)" : col} strokeWidth={1.5} />
-              <text x={x} y={y - 2} textAnchor="middle" style={{ fill: "var(--ink)", fontSize: 11 }}>{trunc(n.label, 16)}</text>
-              <text x={x} y={y + 11} textAnchor="middle" style={{ fill: "var(--muted)", fontFamily: "var(--mono)", fontSize: 9 }}>{n.mitre}</text>
+              <foreignObject x={x - 53} y={y - 20} width={106} height={42}>
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', lineHeight: 1.1 }}>
+                  <span style={{ color: "var(--ink)", fontSize: 10 }}>{n.label}</span>
+                  <span style={{ color: "var(--muted)", fontFamily: "var(--mono)", fontSize: 9, marginTop: 2 }}>{n.mitre}</span>
+                </div>
+              </foreignObject>
             </g>
           );
         })}

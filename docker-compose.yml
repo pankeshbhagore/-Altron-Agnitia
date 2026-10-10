@@ -41,7 +41,10 @@ services:
     image: grafana/grafana:11.2.0
     container_name: twin-grafana
     environment: [GF_AUTH_ANONYMOUS_ENABLED=true]
-    volumes: ["./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/twin.json:ro"]
+    volumes: 
+      - ./monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/twin.json:ro
+      - ./monitoring/dashboard-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./monitoring/datasource-provisioning.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
     ports: ["3000:3000"]
     networks: [twin]
 
