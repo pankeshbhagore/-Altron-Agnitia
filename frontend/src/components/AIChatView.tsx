@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const BASE = import.meta.env.VITE_API ?? "";
 
@@ -41,21 +41,23 @@ export default function AIChatView() {
             alignSelf: m.role === "user" ? "flex-end" : "flex-start",
             background: m.role === "user" ? "var(--ink)" : "var(--panel2)",
             color: m.role === "user" ? "#fff" : "var(--ink)",
-            padding: "12px 18px",
-            borderRadius: 12,
+            padding: "16px 20px",
+            borderRadius: 16,
             maxWidth: "80%",
-            lineHeight: 1.5,
-            fontSize: 14
+            lineHeight: 1.6,
+            fontSize: 15,
+            boxShadow: "0 2px 6px rgba(16,24,40,0.04)"
           }}>
-            <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, marginBottom: 4, textTransform: "uppercase" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.6, marginBottom: 6, textTransform: "uppercase", letterSpacing: 0.5 }}>
               {m.role === "user" ? "You" : "GPT-4o Advisor"}
             </div>
-            <div dangerouslySetInnerHTML={{ __html: m.text.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+            {m.role === "ai" ? <Typewriter html={m.text.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+                             : <div dangerouslySetInnerHTML={{ __html: m.text.replace(/\n/g, '<br/>') }} />}
           </div>
         ))}
         {loading && (
-          <div style={{ alignSelf: "flex-start", background: "var(--panel2)", padding: "12px 18px", borderRadius: 12, fontSize: 14, color: "var(--muted)" }}>
-            Analyzing the digital twin...
+          <div style={{ alignSelf: "flex-start", background: "var(--panel2)", padding: "16px 20px", borderRadius: 16, fontSize: 15, color: "var(--muted)", display: "flex", gap: 8, alignItems: "center" }}>
+            <div className="spinner"></div> Analyzing the digital twin...
           </div>
         )}
       </div>
@@ -75,3 +77,29 @@ export default function AIChatView() {
     </div>
   );
 }
+
+function Typewriter({ html }: { html: string }) {
+  const [vis, setVis] = useState(0);
+  
+  useEffect(() => {
+    let i = 0;
+    const t = setInterval(() => {
+      i += 4;
+      setVis(i);
+      if (i >= html.length) clearInterval(t);
+    }, 10);
+    return () => clearInterval(t);
+  }, [html]);
+
+  return (
+    <div dangerouslySetInnerHTML={{ __html: html.slice(0, Math.max(vis, 5)) + (vis < html.length ? "▋" : "") }} />
+  );
+}
+
+// Add a tiny inline style for the spinner
+const style = document.createElement("style");
+style.innerHTML = `
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--line2); border-top-color: var(--steel); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+`;
+document.head.appendChild(style);

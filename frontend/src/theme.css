@@ -22,12 +22,13 @@
 html, body, #root { height: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--ink);
-  font-family: var(--sans); font-size: 14px; line-height: 1.5;
+  font-family: var(--sans); font-size: 15px; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   background-image: radial-gradient(1100px 500px at 90% -10%, #EAF1FF 0%, transparent 60%);
 }
 a { color: var(--steel); text-decoration: none; }
-button { font-family: inherit; cursor: pointer; }
+button { font-family: inherit; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+button:active { transform: scale(0.97); }
 .mono { font-family: var(--mono); }
 
 .shell { display: grid; grid-template-columns: 236px 1fr; min-height: 100%; }
@@ -62,8 +63,8 @@ button { font-family: inherit; cursor: pointer; }
 
 .main { padding: 26px 30px 70px; max-width: 1180px; }
 .pagehead { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
-.pagehead h2 { margin:0; font-size:20px; font-weight:600; letter-spacing:-.01em; color: var(--ink); }
-.pagehead p { margin:4px 0 0; color: var(--muted); font-size:13px; max-width:560px; }
+.pagehead h2 { margin:0; font-size:24px; font-weight:700; letter-spacing:-.02em; color: var(--ink); }
+.pagehead p { margin:6px 0 0; color: var(--muted); font-size:15px; max-width:600px; line-height: 1.5; }
 
 .panel { background: var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px; box-shadow: var(--shadow-sm); }
 .panel .cap { font-family: var(--mono); font-size:11px; color: var(--muted); margin:0 0 14px; display:flex; justify-content:space-between; align-items:center; }
